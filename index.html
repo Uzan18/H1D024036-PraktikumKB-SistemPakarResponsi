@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sistem Pakar – Konsentrasi Informatika</title>
+    <title>InformaPath – IT Specialization Assessment</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -212,9 +212,7 @@
 <body class="scanline-wrap">
     <div id="app" class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-12">
 
-        <!-- ══════════════════════════════════════════
-       SCREEN 1 — INTRO
-  ══════════════════════════════════════════ -->
+        <!-- Tampilan Awal (Halaman Intro) -->
         <section id="screen-intro" class="w-full max-w-xl animate-fadeUp">
             <div class="card p-8 md:p-10 text-center">
 
@@ -230,15 +228,14 @@
 
                 <span class="badge"
                     style="background:rgba(63,185,80,.12);color:#3fb950;border:1px solid rgba(63,185,80,.3);">
-                    Sistem Pakar · Forward Chaining
+                    AI-Powered Assessment
                 </span>
 
                 <h1 class="font-display text-3xl md:text-4xl font-800 text-white mt-3 leading-tight">
-                    Temukan Konsentrasi<br />Studi Terbaikmu
+                    IT Specialization<br />Pathfinder
                 </h1>
                 <p class="text-muted mt-4 text-sm leading-relaxed max-w-sm mx-auto">
-                    Jawab 12 pernyataan singkat. Engine <strong class="text-accent/80">Forward Chaining</strong>
-                    Python di backend akan menganalisis minat &amp; preferensimu.
+                    Analisis cerdas untuk menentukan jalur spesialisasi IT yang paling tepat berdasarkan preferensi dan profil teknismu.
                 </p>
 
                 <!-- Konsentrasi pills -->
@@ -273,12 +270,10 @@
         </section>
 
 
-        <!-- ══════════════════════════════════════════
-       SCREEN 2 — QUIZ
-  ══════════════════════════════════════════ -->
+        <!-- Halaman Pertanyaan (Kuis) -->
         <section id="screen-quiz" class="w-full max-w-xl hidden">
             <div class="flex items-center justify-between mb-5">
-                <span class="font-display text-xs font-600 tracking-widest text-muted uppercase">Sistem Pakar</span>
+                <span class="font-display text-xs font-600 tracking-widest text-muted uppercase">Assessment Panel</span>
                 <span id="q-counter" class="font-display text-xs font-600 text-muted"></span>
             </div>
 
@@ -309,14 +304,12 @@
         </section>
 
 
-        <!-- ══════════════════════════════════════════
-       SCREEN 3 — LOADING (memanggil API)
-  ══════════════════════════════════════════ -->
+        <!-- Tampilan Loading (pas nunggu balasan dari Python) -->
         <section id="screen-loading" class="w-full max-w-xl hidden">
             <div class="card p-12 flex flex-col items-center gap-5 text-center">
                 <div class="spinner"></div>
-                <p class="font-display text-white font-700 text-lg">Menganalisis jawabanmu…</p>
-                <p class="text-muted text-sm">Python Forward Chaining engine sedang bekerja</p>
+                <p class="font-display text-white font-700 text-lg">Menganalisis profil teknis…</p>
+                <p class="text-muted text-sm">Sistem AI sedang memproses data preferensimu</p>
                 <div class="mt-2 font-mono text-xs text-muted/60 space-y-1">
                     <p>POST /api/infer</p>
                     <p id="loading-facts" class="text-accent/60"></p>
@@ -325,9 +318,7 @@
         </section>
 
 
-        <!-- ══════════════════════════════════════════
-       SCREEN 4 — RESULT
-  ══════════════════════════════════════════ -->
+        <!-- Halaman Hasil / Rekomendasi Konsentrasi -->
         <section id="screen-result" class="w-full max-w-2xl hidden">
 
             <!-- Top card -->
@@ -380,8 +371,7 @@
 
             <!-- Forward Chaining Trace -->
             <div class="card p-6 mt-4">
-                <p class="text-xs text-muted uppercase tracking-widest font-600 mb-3 font-display">Jejak Inferensi
-                    (Forward Chaining)</p>
+                <p class="text-xs text-muted uppercase tracking-widest font-600 mb-3 font-display">Log Analisis Keputusan</p>
                 <div id="trace-list" class="space-y-2"></div>
             </div>
 
@@ -395,32 +385,20 @@
     </div><!-- /app -->
 
 
-    <!-- ════════════════════════════════════════════════════════
-     JAVASCRIPT — Komunikasi dengan Flask API
-════════════════════════════════════════════════════════ -->
+    <!-- BAGIAN JAVASCRIPT: Buat ngatur tombol dan ngobrol sama Flask -->
     <script>
-        /* ──────────────────────────────────────────────────────
-           CONFIG
-           Ganti API_BASE jika Flask berjalan di port / host lain
-        ────────────────────────────────────────────────────── */
+        // Konfigurasi URL Backend (kalo portnya beda, ganti di sini)
         const API_BASE = 'http://localhost:5000';
 
-        /* ──────────────────────────────────────────────────────
-           PERTANYAAN (diambil dari /api/questions saat load,
-           di-cache di variabel QUESTIONS)
-        ────────────────────────────────────────────────────── */
+        // Variabel buat nyimpen daftar pertanyaan dari backend
         let QUESTIONS = [];
 
-        /* ──────────────────────────────────────────────────────
-           STATE
-        ────────────────────────────────────────────────────── */
+        // State buat ngelacak progres user
         let currentQ = 0;
         let collectedFacts = [];   // fakta dari jawaban "Ya"
         let lastApiResponse = {};  // simpan respons API mentah
 
-        /* ──────────────────────────────────────────────────────
-           INIT — cek API & ambil pertanyaan
-        ────────────────────────────────────────────────────── */
+        // Fungsi jalanin pertama kali (Cek server idup ngga & ambil soal)
         async function init() {
             // 1. Cek API health
             try {
@@ -459,9 +437,7 @@
             if (state !== 'online') btn.disabled = true;
         }
 
-        /* ──────────────────────────────────────────────────────
-           QUIZ FLOW
-        ────────────────────────────────────────────────────── */
+        // Logic buat ngatur jalannya kuis (next, prev, progress)
         function startQuiz() {
             currentQ = 0;
             collectedFacts = [];
@@ -526,9 +502,7 @@
             }
         }
 
-        /* ──────────────────────────────────────────────────────
-           CALL FLASK API  →  POST /api/infer
-        ────────────────────────────────────────────────────── */
+        // Kirim jawaban ke Python (Flask) buat dihitung
         async function callInferAPI() {
             // Progress bar penuh dulu
             document.getElementById('progress-bar').style.width = '100%';
@@ -565,9 +539,7 @@
             }
         }
 
-        /* ──────────────────────────────────────────────────────
-           RENDER RESULT  (dari data API)
-        ────────────────────────────────────────────────────── */
+        // Nampilin hasil dari Python ke layar HTML
         function renderResult(data) {
             show('screen-result');
             fadeIn(document.getElementById('screen-result'));
@@ -651,9 +623,7 @@
             }
         }
 
-        /* ──────────────────────────────────────────────────────
-           ERROR SCREEN (jika API gagal)
-        ────────────────────────────────────────────────────── */
+        // Kalo API error (misal app.py belum di-run)
         function showError(msg) {
             document.getElementById('app').innerHTML += `
     <div class="fixed inset-0 flex items-center justify-center z-50 bg-ink/90 px-4">
@@ -671,9 +641,7 @@
     </div>`;
         }
 
-        /* ──────────────────────────────────────────────────────
-           TOGGLE RAW JSON
-        ────────────────────────────────────────────────────── */
+        // Buat buka/tutup panel raw JSON
         function toggleRaw() {
             const body = document.getElementById('raw-body');
             const arrow = document.getElementById('raw-arrow');
@@ -681,9 +649,7 @@
             arrow.style.transform = open ? '' : 'rotate(180deg)';
         }
 
-        /* ──────────────────────────────────────────────────────
-           RESTART
-        ────────────────────────────────────────────────────── */
+        // Balik ke awal buat ngulang tes
         function restart() {
             hide('screen-result');
             currentQ = 0;
@@ -693,9 +659,7 @@
             fadeIn(document.getElementById('screen-intro'));
         }
 
-        /* ──────────────────────────────────────────────────────
-           UTILS
-        ────────────────────────────────────────────────────── */
+        // Fungsi pembantu buat ngatur elemen HTML
         const $ = id => document.getElementById(id);
         function show(id) { $(id).classList.remove('hidden'); }
         function hide(id) { $(id).classList.add('hidden'); }
@@ -706,9 +670,7 @@
         }
         const delay = ms => new Promise(r => setTimeout(r, ms));
 
-        /* ──────────────────────────────────────────────────────
-           BOOT
-        ────────────────────────────────────────────────────── */
+        // Langsung jalanin pas halaman dibuka
         init();
     </script>
 </body>

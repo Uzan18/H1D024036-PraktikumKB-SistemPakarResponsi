@@ -1,21 +1,17 @@
-# ============================================================
-#  app.py  —  Sistem Pakar Konsentrasi Informatika
-#  Backend: Flask + Forward Chaining Engine (Python)
-#  Jalankan : python app.py
-#  API      : POST /api/infer  →  { "facts": [...] }
-# ============================================================
+# file utama buat jalanin backend (Flask)
+# buat jalaninnya tinggal ketik: python app.py di terminal
+# nanti otomatis jalan di localhost:5000
 
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)   # izinkan request dari frontend (HTML yang dibuka via file:// atau port berbeda)
+CORS(app)   # ngebolehin request dari frontend (HTML yg dibuka via file:// ato beda port)
 
 
-# ════════════════════════════════════════════════════════════
-#  1.  KNOWLEDGE BASE — RULES
-#  Setiap rule: kondisi (list fakta) + bobot + konsentrasi
-# ════════════════════════════════════════════════════════════
+# 1. KNOWLEDGE BASE (Basis Pengetahuan)
+# Disini aku nyimpen aturan-aturan (rules) buat nentuin konsentrasinya
+# Formatnya: kalo kondisinya cocok -> dapet poin (weight) buat konsentrasi tertentu
 
 RULES = [
     # ── Software Engineering ─────────────────────────────
@@ -46,9 +42,9 @@ RULES = [
 ]
 
 
-# ════════════════════════════════════════════════════════════
-#  2.  CONCENTRATION METADATA
-# ════════════════════════════════════════════════════════════
+# 2. DATA KONSENTRASI
+# Ini buat nyimpen info detail masing-masing konsentrasi 
+# biar nanti gampang ditampilin di HTML-nya
 
 CONCENTRATIONS = {
     "SE": {
@@ -156,22 +152,18 @@ CONCENTRATIONS = {
 }
 
 
-# ════════════════════════════════════════════════════════════
-#  3.  FORWARD CHAINING ENGINE
-# ════════════════════════════════════════════════════════════
+# 3. MESIN INFERENSI (Forward Chaining)
+# Ini fungsi utama buat ngitung skornya berdasarkan jawaban yang dipilih user
 
 def forward_chaining(facts: list[str]) -> dict:
-    """
-    Jalankan Forward Chaining:
-      - facts   : list fakta yang dikumpulkan dari jawaban user
-      - return  : dict berisi skor per konsentrasi + rules yang aktif
-    """
+    # facts itu isinya jawaban 'Ya' dari user
+    # kita bakal cocokin sama RULES yang udah dibikin di atas
     fact_set    = set(facts)
     scores      = {key: 0 for key in CONCENTRATIONS}
     fired_rules = []
 
     for rule in RULES:
-        # Cek apakah SEMUA kondisi rule terpenuhi
+        # Cek apakah semua syarat di rule terpenuhi sama jawaban user
         if all(cond in fact_set for cond in rule["conditions"]):
             scores[rule["conclusion"]] += rule["weight"]
             fired_rules.append(rule)
@@ -179,25 +171,12 @@ def forward_chaining(facts: list[str]) -> dict:
     return {"scores": scores, "fired_rules": fired_rules}
 
 
-# ════════════════════════════════════════════════════════════
-#  4.  API ENDPOINTS
-# ════════════════════════════════════════════════════════════
+# 4. API ROUTING
+# Buat ngubungin halaman web (frontend) sama backend Python-nya
 
 @app.route("/api/infer", methods=["POST"])
 def infer():
-    """
-    Endpoint utama inferensi.
-    Request body (JSON):
-      { "facts": ["suka_logika_pemrograman", "tertarik_arsitektur_sistem", ...] }
-    Response (JSON):
-      {
-        "winner": "SE",
-        "scores": { "SE": 12, "DS": 0, "NET": 0, "MM": 0 },
-        "score_pct": { "SE": 80, ... },
-        "fired_rules": [...],
-        "concentrations": { ... }   ← metadata semua konsentrasi
-      }
-    """
+    # endpoint ini buat nerima data jawaban user terus ngembaliin hasil perhitungannya
     body  = request.get_json(silent=True) or {}
     facts = body.get("facts", [])
 
@@ -208,10 +187,10 @@ def infer():
     scores      = result["scores"]
     fired_rules = result["fired_rules"]
 
-    # Tentukan pemenang (skor tertinggi)
+    # Tentuina siapa yg menang (yg skornya paling gede)
     winner = max(scores, key=lambda k: scores[k])
 
-    # Hitung persentase kesesuaian
+    # Ngitung persentasenya dapet berapa persen cocoknya
     score_pct = {
         key: round((scores[key] / CONCENTRATIONS[key]["maxWeight"]) * 100)
         for key in scores
@@ -228,10 +207,7 @@ def infer():
 
 @app.route("/api/questions", methods=["GET"])
 def get_questions():
-    """
-    Opsional: endpoint untuk mengambil daftar pertanyaan
-    agar frontend tidak perlu hard-code pertanyaan.
-    """
+    # nyediain list pertanyaan biar dari HTML tinggal fetch aja, ga usah nulis ulang
     questions = [
         {"id": "q1",  "category": "Logika & Pemrograman",  "text": "Aku suka memecahkan masalah dengan logika pemrograman dan algoritma.",                         "hint": "Misalnya: debugging kode, menyusun alur program, atau berpikir secara terstruktur.", "facts": ["suka_logika_pemrograman"]},
         {"id": "q2",  "category": "Logika & Pemrograman",  "text": "Aku lebih menikmati ngoding suatu fitur daripada mendesain tampilannya.",                      "hint": "Backend logic, business rules, atau struktur data lebih menarik bagimu.",           "facts": ["lebih_suka_coding_dari_desain"]},
@@ -254,9 +230,7 @@ def index():
     return send_file("index.html")
 
 
-# ════════════════════════════════════════════════════════════
-#  5.  RUN
-# ════════════════════════════════════════════════════════════
+# 5. JALANIN SERVER
 
 if __name__ == "__main__":
     print("=" * 55)
