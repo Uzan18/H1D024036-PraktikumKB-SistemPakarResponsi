@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>InformaPath – IT Specialization Assessment</title>
+    <title>Sistem Pakar – Konsentrasi Informatika</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -228,14 +228,15 @@
 
                 <span class="badge"
                     style="background:rgba(63,185,80,.12);color:#3fb950;border:1px solid rgba(63,185,80,.3);">
-                    AI-Powered Assessment
+                    Sistem Pakar · Forward Chaining
                 </span>
 
                 <h1 class="font-display text-3xl md:text-4xl font-800 text-white mt-3 leading-tight">
-                    IT Specialization<br />Pathfinder
+                    Temukan Konsentrasi<br />Studi Terbaikmu
                 </h1>
                 <p class="text-muted mt-4 text-sm leading-relaxed max-w-sm mx-auto">
-                    Analisis cerdas untuk menentukan jalur spesialisasi IT yang paling tepat berdasarkan preferensi dan profil teknismu.
+                    Jawab 12 pernyataan singkat. Engine <strong class="text-accent/80">Forward Chaining</strong>
+                    Python di backend akan menganalisis minat &amp; preferensimu.
                 </p>
 
                 <!-- Konsentrasi pills -->
@@ -273,7 +274,7 @@
         <!-- Halaman Pertanyaan (Kuis) -->
         <section id="screen-quiz" class="w-full max-w-xl hidden">
             <div class="flex items-center justify-between mb-5">
-                <span class="font-display text-xs font-600 tracking-widest text-muted uppercase">Assessment Panel</span>
+                <span class="font-display text-xs font-600 tracking-widest text-muted uppercase">Sistem Pakar</span>
                 <span id="q-counter" class="font-display text-xs font-600 text-muted"></span>
             </div>
 
@@ -308,8 +309,8 @@
         <section id="screen-loading" class="w-full max-w-xl hidden">
             <div class="card p-12 flex flex-col items-center gap-5 text-center">
                 <div class="spinner"></div>
-                <p class="font-display text-white font-700 text-lg">Menganalisis profil teknis…</p>
-                <p class="text-muted text-sm">Sistem AI sedang memproses data preferensimu</p>
+                <p class="font-display text-white font-700 text-lg">Menganalisis jawabanmu…</p>
+                <p class="text-muted text-sm">Python Forward Chaining engine sedang bekerja</p>
                 <div class="mt-2 font-mono text-xs text-muted/60 space-y-1">
                     <p>POST /api/infer</p>
                     <p id="loading-facts" class="text-accent/60"></p>
@@ -371,7 +372,8 @@
 
             <!-- Forward Chaining Trace -->
             <div class="card p-6 mt-4">
-                <p class="text-xs text-muted uppercase tracking-widest font-600 mb-3 font-display">Log Analisis Keputusan</p>
+                <p class="text-xs text-muted uppercase tracking-widest font-600 mb-3 font-display">Jejak Inferensi
+                    (Forward Chaining)</p>
                 <div id="trace-list" class="space-y-2"></div>
             </div>
 
